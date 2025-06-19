@@ -1,0 +1,35 @@
+name: Suma de variables de entorno
+
+on:
+  push:
+    branches:
+      - 'test/**' # Ramas que comiencen con test/
+
+jobs:
+  sumar:
+    name: Calcular suma
+    runs-on: ubuntu-latest
+    outputs:
+      resultado: ${{ steps.sumar.outputs.resultado }}
+    steps:
+      - name: Sumar NUM1 y NUM2
+        id: sumar
+        run: |
+          num1=${{ vars.FIRST_NUMBER }}
+          num2=${{ vars.SECOND_NUMBER }}
+          resultado=$((num1 + num2))
+          echo "Resultado: $resultado"
+          echo "resultado=$resultado" >> "$GITHUB_OUTPUT"
+
+  mostrar:
+    name: Mostrar mensaje según resultado
+    runs-on: ubuntu-latest
+    needs: sumar
+    steps:
+      - name: Evaluar resultado
+        run: |
+          if [ ${{ needs.sumar.outputs.resultado }} -gt 10 ]; then
+            echo "El resultado es mayor a 10: $resultado"
+          else
+            echo "El resultado es menor o igual a 10: $resultado"
+          fi
