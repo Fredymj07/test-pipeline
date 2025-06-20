@@ -28,10 +28,10 @@ jobs:
         run: |
           anio_nacimiento=${{ github.event.inputs.anio_nacimiento }}
 
-          fecha_nacimiento="$anio_nacimiento"
-          fecha_actual=$(date +%Y)
+          fecha_nacimiento="$anio_nacimiento-$mes_nacimiento-$dia_nacimiento"
+          fecha_actual=$(date +%Y-%m-%d)
 
-          edad=$((fecha_actual - fecha_nacimiento))
+          edad=$(( (fecha_actual - fecha_nacimiento) / 86400 ))
 
           echo "Edad calculada: $edad años"
           echo "edad=$edad" >> "$GITHUB_OUTPUT"
