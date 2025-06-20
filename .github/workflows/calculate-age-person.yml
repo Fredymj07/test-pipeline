@@ -5,11 +5,11 @@ on:
     inputs:
       dia_nacimiento:
         description: 'Dia de nacimiento'
-        required: false
+        required: true
         type: string
       mes_nacimiento:
         description: 'Mes de nacimiento'
-        required: false
+        required: true
         type: string
       anio_nacimiento:
         description: 'Año de nacimiento'
