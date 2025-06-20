@@ -5,11 +5,11 @@ on:
     inputs:
       dia_nacimiento:
         description: 'Dia de nacimiento'
-        required: true
+        required: false
         type: string
       mes_nacimiento:
         description: 'Mes de nacimiento'
-        required: true
+        required: false
         type: string
       anio_nacimiento:
         description: 'Año de nacimiento'
@@ -31,7 +31,7 @@ jobs:
           fecha_nacimiento="$anio_nacimiento"
           fecha_actual=$(date +%Y)
 
-          edad=$( $(date -d "$fecha_actual" +%s) - $(date -d "$fecha_nacimiento" +%s) )
+          edad=$((fecha_actual - fecha_nacimiento))
 
           echo "Edad calculada: $edad años"
           echo "edad=$edad" >> "$GITHUB_OUTPUT"
