@@ -3,7 +3,7 @@ name: Suma de variables de entorno
 on:
   push:
     branches:
-      - 'test/**' # Ramas que comiencen con test/
+      - 'test/**'
 
 jobs:
   sumar:
