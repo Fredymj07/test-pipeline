@@ -29,7 +29,9 @@ jobs:
           anio_nacimiento=${{ github.event.inputs.anio_nacimiento }}
 
           fecha_nacimiento="$anio_nacimiento-$mes_nacimiento-$dia_nacimiento"
+          echo "Fecha de nacimiento: $fecha_nacimiento"
           fecha_actual=$(date +%Y-%m-%d)
+          echo "Fecha actual: $fecha_actual"
 
           edad=$(( (fecha_actual - fecha_nacimiento) / 86400 ))
 
