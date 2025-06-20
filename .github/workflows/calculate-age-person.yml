@@ -47,7 +47,9 @@ jobs:
         run: |
           edad=${{ needs.calcular_edad.outputs.edad }}
 
-          if [ $edad -le ${{ vars.LIM_NINEZ }} ]; then
+          if [ $edad -lt ${{ vars.LIM_NINEZ }} ]; then
+            echo "La persona pertenece a la etapa de la Primera Infancia."
+          elif [ $edad -le ${{ vars.LIM_NINEZ }} ]; then
             echo "La persona pertenece a la etapa de la Niñez."
           elif [ $edad -le ${{ vars.LIM_ADOLESCENCIA }} ]; then
             echo "La persona pertenece a la etapa de la Adolescencia."
