@@ -26,9 +26,11 @@ jobs:
       - name: Calcular edad
         id: calcular_edad
         run: |
+          dia_nacimiento=${{ github.event.inputs.dia_nacimiento }}
+          mes_nacimiento=${{ github.event.inputs.mes_nacimiento }}
           anio_nacimiento=${{ github.event.inputs.anio_nacimiento }}
 
-          fecha_nacimiento="$anio_nacimiento-$mes_nacimiento-$dia_nacimiento"
+          fecha_nacimiento=$(date -d "$anio_nacimiento-$mes_nacimiento-$dia_nacimiento" +%s)
           echo "Fecha de nacimiento: $fecha_nacimiento"
           fecha_actual=$(date +%Y-%m-%d)
           echo "Fecha actual: $fecha_actual"
