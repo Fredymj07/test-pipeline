@@ -1,0 +1,29 @@
+name: Operaciones matematicas paralelas
+
+on:
+  workflow_dispatch:
+    inputs:
+      FIRST_NUMBER:
+        description: 'Ingrese el primer número'
+        required: true
+        type: string
+      SECOND_NUMBER:
+        description: 'Ingrese el segundo número'
+        required: true
+        type: string
+
+jobs:
+  mathematical_operations:
+    name: Calculate mathematical operations
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        operation: [sum, subtract, multiply, divide]
+
+    env:
+      FIRST_NUMBER: ${{ inputs.FIRST_NUMBER }}
+      SECOND_NUMBER: ${{ inputs.SECOND_NUMBER }}
+
+    steps:
+      - run: |
+          echo "Primer número: $FIRST_NUMBER - Segundo número: $SECOND_NUMBER"
