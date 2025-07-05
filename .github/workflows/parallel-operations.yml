@@ -1,4 +1,4 @@
-name: Operaciones matematicas paralelas
+name: parallel-mathematical-operations
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ on:
 
 jobs:
   mathematical_operations:
-    name: Calculate mathematical operations
+    name: Mathematical operation
     runs-on: ubuntu-latest
     strategy:
       matrix:
