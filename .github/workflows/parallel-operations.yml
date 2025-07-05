@@ -6,11 +6,11 @@ on:
       FIRST_NUMBER:
         description: 'Ingrese el primer número'
         required: true
-        type: string
+        type: number
       SECOND_NUMBER:
         description: 'Ingrese el segundo número'
         required: true
-        type: string
+        type: number
 
 jobs:
   mathematical_operations:
