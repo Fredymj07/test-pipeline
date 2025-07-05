@@ -25,5 +25,31 @@ jobs:
       SECOND_NUMBER: ${{ inputs.SECOND_NUMBER }}
 
     steps:
-      - run: |
-          echo "Primer número: $FIRST_NUMBER - Segundo número: $SECOND_NUMBER"
+      - name: Perform ${{ matrix.operation }} operation
+        run: |
+          num1=${{ env.FIRST_NUMBER }}
+          num2=${{ env.SECOND_NUMBER }}
+
+          case ${{ matrix.operation }} in
+            sum)
+              result=$((num1 + num2))
+              echo "Sum: $result"
+              ;;
+            subtract)
+              result=$((num1 - num2))
+              echo "Subtract: $result"
+              ;;
+            multiply)
+              result=$((num1 * num2))
+              echo "Multiply: $result"
+              ;;
+            divide)
+              if [ $num2 -ne 0 ]; then
+                result=$((num1 / num2))
+                echo "Divide: $result"
+              else
+                echo "Error: Division by zero is not allowed."
+                exit 1
+              fi
+              ;;
+          esac
