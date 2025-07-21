@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Convert string to JSON
         uses: devops-actions/json-to-file@v1.0.0
         with:
