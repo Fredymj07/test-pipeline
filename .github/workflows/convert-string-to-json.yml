@@ -1,4 +1,4 @@
-name: convert-string-to-json
+name: convert-json-to-file
 
 on:
   push:
@@ -17,10 +17,10 @@ jobs:
         uses: devops-actions/json-to-file@v1.0.0
         with:
           json: '{"name": "pipelines", "activity": 3, "module": 2, "isRequired": false}'
-          filename: 'test.json'
+          filename: 'archivo.json'
 
       - name: Upload JSON file as artifact
         uses: actions/upload-artifact@v4
         with:
           name: test-json
-          path: test.json
+          path: archivo.json
