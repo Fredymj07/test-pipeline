@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  test:
+  convert_file_to_json:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,5 +19,5 @@ jobs:
       - name: Upload JSON file as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: test-json
+          name: archivo-json
           path: archivo.json
