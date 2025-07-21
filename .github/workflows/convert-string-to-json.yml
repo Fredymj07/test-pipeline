@@ -3,7 +3,7 @@ name: convert-json-to-file
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   test:
