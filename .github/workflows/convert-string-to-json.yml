@@ -13,7 +13,13 @@ jobs:
       - name: Convert JSON to file
         uses: devops-actions/json-to-file@v1.0.0
         with:
-          json: '{"name": "pipelines", "activity": 3, "module": 2, "isRequired": false}'
+          json: |
+            {
+              "name": "pipelines",
+              "activity": 3,
+              "module": 2,
+              "isRequired": false
+            }
           filename: 'archivo.json'
 
       - name: Upload JSON file as artifact
