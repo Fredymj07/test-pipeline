@@ -1,0 +1,26 @@
+name: convert-string-to-json
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Convert string to JSON
+        uses: devops-actions/json-to-file@v1.0.0
+        with:
+          json: '{"name": "pipelines", "activity": 3, "module": 2, "isRequired": false}'
+          filename: 'test.json'
+
+      - name: Upload JSON file as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-json
+          path: test.json
