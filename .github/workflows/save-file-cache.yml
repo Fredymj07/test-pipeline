@@ -1,4 +1,4 @@
-name: convert-json-to-file
+name: convert-json-to-file-using-cache
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
         with:
           json: |
             {
-              "name": "pipelines",
+              "name": "pipeline",
               "activity": 3,
               "module": 2,
               "isRequired": false
