@@ -5,40 +5,38 @@ on:
     branches:
       - master
 
+env:
+  json: '{"name": "pipelines","activity": 3,"module": 5,"isRequired": false}'
+
 jobs:
   convert_file_to_json:
+    name: Convert and upload text to JSON
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set JSON content and compute hash
+      - name: Compute hash
         id: compute_hash
         run: |
-          echo '{"name":"pipelines","activity":3,"module":2,"isRequired":false}' > archivo.json
-          HASH=$(sha256sum archivo.json | cut -d ' ' -f1)
-          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+          echo "hash=$(echo -n '${{ env.json }}' | sha256sum | cut -d ' ' -f1)" >> $GITHUB_OUTPUT
 
       - name: Cache JSON file
         id: cache_json
         uses: actions/cache@v4
+        env:
+          cache-name: cache_json
         with:
           path: archivo.json
-          key: json-file-${{ steps.compute_hash.outputs.hash }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ steps.compute_hash.outputs.hash }}
 
       - name: Convert JSON to file(Only if not cached)
-        if: steps.cache_json.outputs.cache-hit != 'true'
-        uses: devops-actions/json-to-file@v1.0.0
+        if: ${{ steps.compute_hash.outputs.hash != 'true' }}
+        uses: devops-actions/json-to-file@v1.0.4
         with:
-          json: |
-            {
-              "name": "pipeline",
-              "activity": 3,
-              "module": 2,
-              "isRequired": false
-            }
+          json: ${{ env.json }}
           filename: 'archivo.json'
 
       - name: Upload JSON file as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: archivo-json
+          name: artifact
           path: archivo.json
