@@ -23,13 +23,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/cache/restore@v4
+      - name: Restore cache
         id: cache-restored
+        uses: actions/cache/restore@v4
         with:
-          path: path/to/dependencies
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          path: response.json
+          key: ${{ runner.os }}-${{ vars.LANG }}-${{ inputs.MONTH }}-${{ inputs.DAY }}
 
       - name: Fetch historical events from API response (Only if not cached)
+        id: response-api
         if: steps.cache-restored.outputs.cache-hit != 'true'
         run: |
-          curl -s "https://api.wikimedia.org/feed/v1/wikipedia/${{ vars.LANG }}/onthisday/all/${{ inputs.MONTH }}/${{ inputs.DAY }}" -o response.json
+          curl -s 'https://api.wikimedia.org/feed/v1/wikipedia/${{ vars.LANG }}/onthisday/selected/${{ inputs.MONTH }}/${{ inputs.DAY }}' -o response.json
+          echo 'file=response.json >> $GITHUB_OUTPUT'
+          echo 'API response fetched and saved to file.'
+
+      - name: Compute hash
+        id: compute_hash
+        run: |
+          echo "hash=$(echo -n '${{ vars.LANG }}-${{ inputs.MONTH }}-${{ inputs.DAY }}-${{ steps.response-api.outputs.file }}' | sha256sum | cut -d ' ' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Save response.json to cache
+        uses: actions/cache/save@v4
+        with:
+          path: response.json
+          key: ${{ runner.os }}-${{ vars.LANG }}-${{ inputs.MONTH }}-${{ inputs.DAY }}-${{ steps.response-api.outputs.file }}
+
