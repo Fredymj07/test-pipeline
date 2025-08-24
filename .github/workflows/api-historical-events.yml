@@ -21,6 +21,8 @@ jobs:
   fetch-events:
     name: Fetch historical events from cached response API
     runs-on: ubuntu-latest
+    outputs:
+      events-list: ${{ steps.consult-json.outputs.events }}
 
     steps:
       - name: Restore cache
@@ -34,9 +36,9 @@ jobs:
         id: response-api
         if: steps.cache-restored.outputs.cache-hit != 'true'
         run: |
-          curl -s 'https://api.wikimedia.org/feed/v1/wikipedia/${{ vars.LANG }}/onthisday/selected/${{ inputs.MONTH }}/${{ inputs.DAY }}' -o response.json
-          echo 'file=response.json >> $GITHUB_OUTPUT'
-          echo 'API response fetched and saved to file.'
+          curl -s "https://api.wikimedia.org/feed/v1/wikipedia/${{ vars.LANG }}/onthisday/selected/${{ inputs.MONTH }}/${{ inputs.DAY }}" -o response.json
+          echo "file=response.json" >> $GITHUB_OUTPUT
+          echo "API response fetched and saved to file."
 
       - name: Compute hash
         id: compute_hash
@@ -49,3 +51,63 @@ jobs:
           path: response.json
           key: ${{ runner.os }}-${{ vars.LANG }}-${{ inputs.MONTH }}-${{ inputs.DAY }}
 
+      - name: Substract events from response.json
+        id: consult-json
+        run: |
+          if [ -s response.json ]; then
+            COUNT=$(jq '.selected | length' response.json)
+            if [ "$COUNT" -eq 0 ]; then
+              echo "Don't find events for the ${{ inputs.MONTH }}/${{ inputs.DAY }}."
+              echo "events=[]" >> $GITHUB_OUTPUT
+            else
+              jq -c '[.selected[] | {title: .pages[0].title, url: .pages[0].content_urls.desktop.page}]' response.json > events.json
+              EVENTS=$(cat events.json)
+              echo "Se encontraron $COUNT eventos."
+              echo "events=$EVENTS" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "response.json vacío. No se pudieron extraer eventos."
+            echo "events=[]" >> $GITHUB_OUTPUT
+          fi
+
+  pdf-generation:
+    name: Generate PDF with historical events
+    runs-on: ubuntu-latest
+    needs: fetch-events
+    if: ${{ needs.fetch-events.outputs.events-list != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        page: ${{ fromJson(needs.fetch-events.outputs.events-list) }}
+
+    steps:
+      - name: Save name for PDF
+        id: save-pdf-name
+        run: |
+          TITLE_EVENT=$(echo "${{ matrix.page.title }}" | tr ' ' '_' | tr -cd '[:alnum:]_')
+          NAME_PDF="${{ inputs.MONTH }}-${{ inputs.DAY }}-${TITLE_EVENT}.pdf"
+          echo "NAME_PDF=$NAME_PDF" >> $GITHUB_ENV
+
+      - name: Cached PDF generated
+        id: cache-pdf
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NAME_PDF }}
+          key: pdf-${{ env.NAME_PDF }}
+
+      - name: Descargar página HTML
+        run: curl -L "${{ matrix.page.url }}" -o page.html
+
+      - name: Generar PDF desde HTML
+        if: ${{ steps.cache-pdf.outputs.cache-hit != 'true' }}
+        uses: fifsky/html-to-pdf-action@master
+        with:
+          htmlFile: page.html
+          outputFile: ${{ env.NAME_PDF }}
+
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.NAME_PDF }}
+          path: ${{ env.NAME_PDF }}
+          retention-days: 1
