@@ -1,0 +1,35 @@
+name: api-historical-events
+
+on:
+  workflow_dispatch:
+    inputs:
+      MONTH:
+        description: 'Ingrese el número del mes'
+        required: true
+        type: choice
+        options: [ "01","02","03","04","05","06","07","08","09","10","11","12" ]
+
+      DAY:
+        description: 'Ingrese el número del día'
+        required: true
+        type: choice
+        options: [ "01","02","03","04","05","06","07","08","09","10",
+                   "11","12","13","14","15","16","17","18","19","20",
+                   "21","22","23","24","25","26","27","28","29","30","31" ]
+
+jobs:
+  fetch-events:
+    name: Fetch historical events from cached response API
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/cache/restore@v4
+        id: cache-restored
+        with:
+          path: path/to/dependencies
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Fetch historical events from API response (Only if not cached)
+        if: steps.cache-restored.outputs.cache-hit != 'true'
+        run: |
+          curl -s "https://api.wikimedia.org/feed/v1/wikipedia/${{ vars.LANG }}/onthisday/all/${{ inputs.MONTH }}/${{ inputs.DAY }}" -o response.json
