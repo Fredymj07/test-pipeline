@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       events-list: ${{ steps.consult-json.outputs.events }}
+      events-count: ${{ steps.consult-json.outputs.events_count }}
 
     steps:
       - name: Restore cache
@@ -60,26 +61,30 @@ jobs:
               if [ "$COUNT" -eq 0 ]; then
                 echo "Don't find events for the ${{ inputs.MONTH }}/${{ inputs.DAY }}."
                 echo "events=[]" >> $GITHUB_OUTPUT
+                echo "events_count=0" >> $GITHUB_OUTPUT
               else
                 jq -c '[.selected[] | {title: .pages[0].title, url: .pages[0].content_urls.desktop.page}]' response.json > events_list.json
                 EVENTS=$(cat events_list.json)
                 echo "Se encontraron $COUNT eventos."
                 echo "events=$EVENTS" >> $GITHUB_OUTPUT
+                echo "events_count=$COUNT" >> $GITHUB_OUTPUT
               fi
             else
               echo "response.json no contiene JSON válido."
               echo "events=[]" >> $GITHUB_OUTPUT
+              echo "events_count=0" >> $GITHUB_OUTPUT
             fi
           else
             echo "response.json vacío. No se pudieron extraer eventos."
             echo "events=[]" >> $GITHUB_OUTPUT
+            echo "events_count=0" >> $GITHUB_OUTPUT
           fi
 
   pdf-generation:
     name: Generate PDF with historical events
     runs-on: ubuntu-latest
     needs: fetch-events
-    if: ${{ needs.fetch-events.outputs.events-list != '[]' }}
+    if: needs.fetch-events.outputs.events-count != '0'
     strategy:
       fail-fast: false
       matrix:
