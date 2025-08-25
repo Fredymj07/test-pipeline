@@ -55,7 +55,7 @@ jobs:
         id: consult-json
         run: |
           if [ -s response.json ]; then
-            COUNT=$(jq '.selected | length' response.json)
+            COUNT=$(jq ".selected | length" response.json)
             if [ "$COUNT" -eq 0 ]; then
               echo "Don't find events for the ${{ inputs.MONTH }}/${{ inputs.DAY }}."
               echo "events=[]" >> $GITHUB_OUTPUT
