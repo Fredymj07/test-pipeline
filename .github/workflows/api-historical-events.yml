@@ -98,7 +98,7 @@ jobs:
       - name: Descargar página HTML
         run: curl -L "${{ matrix.page.url }}" -o page.html
 
-      - name: Generar PDF desde HTML
+      - name: Generate PDF from HTML
         if: ${{ steps.cache-pdf.outputs.cache-hit != 'true' }}
         uses: fifsky/html-to-pdf-action@master
         with:
