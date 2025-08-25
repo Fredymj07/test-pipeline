@@ -40,7 +40,7 @@ jobs:
         id: response-api
         if: steps.cache-restored.outputs.cache-hit != 'true'
         run: |
-          curl -s 'https://api.wikimedia.org/feed/v1/wikipedia/${{ vars.LANG }}/onthisday/selected/${{ inputs.MONTH }}/${{ inputs.DAY }}' -o response.json
+          curl -s "https://api.wikimedia.org/feed/v1/wikipedia/${{ vars.LANG }}/onthisday/selected/${{ inputs.MONTH }}/${{ inputs.DAY }}" -o response.json
           echo "file=response.json" >> $GITHUB_OUTPUT
           echo "API response fetched and saved to file."
 
