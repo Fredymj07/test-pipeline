@@ -59,21 +59,25 @@ jobs:
         id: consult-json
         run: |
           if [ -s response.json ]; then
-            COUNT=$(jq '.selected | length' response.json)
-            if [ "$COUNT" -eq 0 ]; then
-              echo "Don't find events for ${{ inputs.MONTH }}/${{ inputs.DAY }}."
-              echo "events=[]" >> $GITHUB_OUTPUT
+            if jq empty response.json 2>/dev/null; then
+              COUNT=$(jq '.selected | length' response.json)
+              if [ "$COUNT" -eq 0 ]; then
+                echo "Don't find events for the ${{ inputs.MONTH }}/${{ inputs.DAY }}."
+                echo "events=[]" >> $GITHUB_OUTPUT
+              else
+                jq -c '[.selected[] | {title: .pages[0].title, url: .pages[0].content_urls.desktop.page}]' response.json > events_list.json
+                EVENTS=$(cat events_list.json)
+                echo "Se encontraron $COUNT eventos."
+                echo "events=$EVENTS" >> $GITHUB_OUTPUT
+              fi
             else
-              jq -c '[.selected[] | {title: .pages[0].title, url: .pages[0].content_urls.desktop.page}]' response.json > events.json
-              EVENTS=$(cat events.json)
-              echo "Se encontraron $COUNT eventos."
-              echo "events=$EVENTS" >> $GITHUB_OUTPUT
+              echo "response.json no contiene JSON válido."
+              echo "events=[]" >> $GITHUB_OUTPUT
             fi
           else
             echo "response.json vacío. No se pudieron extraer eventos."
             echo "events=[]" >> $GITHUB_OUTPUT
           fi
-
 
   pdf-generation:
     name: Generate PDF with historical events
