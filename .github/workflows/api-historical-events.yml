@@ -48,14 +48,20 @@ jobs:
           curl --silent --location \
             "https://api.wikimedia.org/feed/v1/wikipedia/${{ env.LANG }}/onthisday/selected/${{ env.MONTH }}/${{ env.DAY }}" \
             -o response.json
-          echo "API response fetched and saved to file."
+          echo "API response fetched:"
+          head -n 20 response.json
 
-      - name: Compute hash
-        id: compute_hash
+      - name: Check if response.json is valid
+        id: check-json
         run: |
-          echo "hash=$(echo -n '${{ env.LANG }}-${{ env.MONTH }}-${{ env.DAY }}' | sha256sum | cut -d ' ' -f1)" >> $GITHUB_OUTPUT
+          if [ -s response.json ]; then
+            echo "valid=true" >> $GITHUB_OUTPUT
+          else
+            echo "valid=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Save response.json to cache
+        if: success() && steps.response-api.conclusion == 'success' && steps.check-json.outputs.valid == 'true'
         uses: actions/cache/save@v4
         with:
           path: response.json
