@@ -27,8 +27,10 @@ jobs:
     needs: sumar
     steps:
       - name: Evaluar resultado
+        env:
+          result: ${{ needs.sumar.outputs.resultado }}
         run: |
-          if [ ${{ needs.sumar.outputs.resultado }} -gt 10 ]; then
+          if [ ${{ env.result }} -gt 10 ]; then
             echo "El resultado es mayor a 10: $resultado"
           else
             echo "El resultado es menor o igual a 10: $resultado"
