@@ -45,8 +45,11 @@ jobs:
         id: response-api
         if: steps.cache-restored.outputs.cache-hit != 'true'
         run: |
-          RESPONSE=($curl --silent --location "https://api.wikimedia.org/feed/v1/wikipedia/${{ env.LANG }}/onthisday/selected/${{ env.MONTH }}/${{ env.DAY }}") -o response.json
-          echo "$RESPONSE" | jq '.selected[]' | > response.json
+          curl --silent --location \
+            "https://api.wikimedia.org/feed/v1/wikipedia/${{ env.LANG }}/onthisday/selected/${{ env.MONTH }}/${{ env.DAY }}") \
+            -o response.json
+
+          jq '.selected[]' response.json > response.json
           echo "API response fetched and saved to file."
 
       - name: Compute hash
