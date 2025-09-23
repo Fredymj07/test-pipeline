@@ -11,11 +11,15 @@ on:
         description: "Número del día"
         required: true
         type: string
+      LANG:
+        description: "Idioma de la consulta"
+        required: true
+        type: string
 
 env:
   MONTH: ${{ inputs.MONTH }}
   DAY: ${{ inputs.DAY }}
-  LANG: ${{ vars.LANG }}
+  LANG: ${{ inputs.LANG }}
 
 jobs:
   fetch-events:
