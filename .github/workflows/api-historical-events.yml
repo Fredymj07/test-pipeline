@@ -95,7 +95,7 @@ jobs:
     name: Generate PDF with historical events
     runs-on: ubuntu-latest
     needs: fetch-events
-    if: needs.fetch-events.outputs.events-count != '0'
+    if: needs.fetch-events.outputs.events-list != '[]'
     strategy:
       fail-fast: false
       matrix:
